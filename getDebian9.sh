@@ -1,5 +1,5 @@
 #!/bin/sh
-#wget "http://cdimage.debian.org/cdimage/archive/9.13.0-live/amd64/iso-hybrid/debian-live-9.13.0-amd64-xfce.iso" -O "debian-live-9.13.0-amd64-xfce.iso"
+wget "http://cdimage.debian.org/cdimage/archive/9.13.0-live/amd64/iso-hybrid/debian-live-9.13.0-amd64-xfce.iso" -O "debian-live-9.13.0-amd64-xfce.iso"
 mkdir isomountpoint
 sudo mount -o loop "debian-live-9.13.0-amd64-xfce.iso" isomountpoint
 sudo unsquashfs isomountpoint/live/filesystem.squashfs
@@ -28,6 +28,7 @@ fi
 sudo cp -a patches squashfs-root/Sources/
 sudo cp -a getSourceDeps.sh squashfs-root/Sources/
 sudo cp -a getRepo.sh squashfs-root/Sources/
+sudo cp -a reapz-download.sh squashfs-root/Sources/
 
 #prepare chroot
 ./mountunmount.sh "before"

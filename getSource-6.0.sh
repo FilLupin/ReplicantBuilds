@@ -45,7 +45,7 @@ printf "This will require ~140GB\n"
 #use system certificates
 export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
-source /usr/local/bin/repo-env.sh
+#source /usr/local/bin/repo-env.sh
 
 mkdir replicant-6.0
 cd replicant-6.0
@@ -53,24 +53,41 @@ cd replicant-6.0
 git config --global user.email "dontcall@me.com"
 git config --global user.name "Absolutely Anonymous"
 
-git clone https://git.replicant.us/replicant/manifest.git -b replicant-6.0 manifest
+while true; do
+	git clone https://git.replicant.us/replicant/manifest.git -b replicant-6.0 manifest
+	if [ "$?" = "0" ]; then
+		break
+	else
+		if [ -d manifest ]; then
+			rm -rf manifest
+		fi
+		sleep 60
+	fi
+done
 
 cd manifest
 
 #fix broken links in manifest
 patch -p0 < ../../patches/vanilla_replicant_default.xml.patch
 
-thedir="$PWD"
-git init
-git add default.xml
-git commit -m "My local manifest"
 cd ..
-repo init -u "${thedir}" -b replicant-6.0
-repo sync
+
+
+mkdir -p "${thepwd}/replicantMirror"
+
+#mirror the sources
+${thepwd}/reapz-download.sh reconstructmirror "${REPLICANTDIR}/manifest/default.xml" "${thepwd}/replicantMirror"
+
+#clone from bare git to working git
+${thepwd}/reapz-download.sh processsources "${REPLICANTDIR}/manifest/default.xml" "${thepwd}/replicantMirror" "${REPLICANTDIR}"
+
+thedir="$PWD"
+
 
 #get fdroid prebuilt apps
 gpg --keyserver keys.gnupg.net --recv-key 37D2C98789D8311948394E3E41E7044E1DBA2E89
 vendor/replicant/get-prebuilts
+
 
 ###	cd "${REPLICANTDIR}"
 ###

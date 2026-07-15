@@ -1,6 +1,6 @@
 --- default.xml.old	2026-06-30 10:16:25.300052836 +0100
-+++ default.xml	2026-06-30 10:46:36.081339512 +0100
-@@ -2,20 +2,19 @@
++++ default.xml	2026-07-03 12:20:24.241772922 +0100
+@@ -2,20 +2,20 @@
  <manifest>
  
    <remote  name="aosp"
@@ -11,23 +11,24 @@
    <remote  name="lineage-mirror"
 -           fetch=".."
 -           revision="refs/tags/replicant-6.0-0004" />
-+          fetch="https://git.replicant.us/" />
++          fetch="https://git.replicant.us/"
++          revision="refs/tags/replicant-6.0-0004" />
  
    <remote name="replicant"
 -          fetch=".."
 -          revision="refs/tags/replicant-6.0-0004" />
 +          fetch="https://git.replicant.us/"
-+          revision="replicant-6.0" />
++          revision="replicant-6.0-0004" />
  
    <remote name="fdroid"
 -          fetch=".."
 -          revision="refs/tags/replicant-6.0-0004" />
-+          fetch="https://gitlab.com/fdroid/"
++          fetch="https://github.com"
 +          revision="refs/tags/0.2.8" />
  
    <remote  name="private"
             fetch="ssh://git@github.com" />
-@@ -29,7 +28,6 @@
+@@ -29,7 +29,6 @@
    <project path="build" name="replicant/build.git" remote="replicant" groups="pdk" >
      <copyfile src="core/root.mk" dest="Makefile" />
    </project>
@@ -35,3 +36,12 @@
    <project path="abi/cpp" name="mirrors/LineageOS/android_abi_cpp.git" groups="pdk" />
    <project path="art" name="replicant/art.git" groups="pdk" remote="replicant" />
    <project path="bionic" name="mirrors/LineageOS/android_bionic.git" groups="pdk" />
+@@ -221,7 +220,7 @@
+   <project path="packages/apps/Email" name="mirrors/LineageOS/android_packages_apps_Email.git" groups="pdk-fs" />
+   <project path="packages/apps/ExactCalculator" name="mirrors/LineageOS/android_packages_apps_ExactCalculator.git" groups="pdk-fs" />
+   <project path="packages/apps/Exchange" name="mirrors/LineageOS/android_packages_apps_Exchange.git" groups="pdk-fs" />
+-  <project path="packages/apps/FDroidPrivilegedExtension" name="mirrors/F-Droid/privileged-extension.git" remote="fdroid" />
++  <project path="packages/apps/FDroidPrivilegedExtension" name="f-droid/privileged-extension.git" remote="fdroid" />
+   <project path="packages/apps/FMRadio" name="mirrors/LineageOS/android_packages_apps_FMRadio.git" groups="pdk-fs" />
+   <project path="packages/apps/Gallery" name="mirrors/AOSP/platform_packages_apps_Gallery.git" groups="pdk-fs" remote="aosp" />
+   <project path="packages/apps/Gallery2" name="mirrors/LineageOS/android_packages_apps_Gallery2.git" groups="pdk-fs" />
