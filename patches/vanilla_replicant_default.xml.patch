@@ -1,5 +1,5 @@
 --- default.xml.old	2026-06-30 10:16:25.300052836 +0100
-+++ default.xml	2026-07-03 12:20:24.241772922 +0100
++++ default.xml	2009-09-15 01:02:30.260111831 +0100
 @@ -2,20 +2,20 @@
  <manifest>
  
@@ -23,7 +23,7 @@
    <remote name="fdroid"
 -          fetch=".."
 -          revision="refs/tags/replicant-6.0-0004" />
-+          fetch="https://github.com"
++          fetch="https://github.com/"
 +          revision="refs/tags/0.2.8" />
  
    <remote  name="private"
