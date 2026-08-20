@@ -85,7 +85,7 @@ thedir="$PWD"
 
 
 #get fdroid prebuilt apps
-gpg --keyserver keys.gnupg.net --recv-key 37D2C98789D8311948394E3E41E7044E1DBA2E89
+gpg --keyserver keys.openpgp.org --recv-key 37D2C98789D8311948394E3E41E7044E1DBA2E89
 vendor/replicant/get-prebuilts
 
 
