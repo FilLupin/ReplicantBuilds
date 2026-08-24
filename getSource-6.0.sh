@@ -84,7 +84,7 @@ ${thepwd}/reapz-download.sh processsources "${REPLICANTDIR}/manifest/default.xml
 thedir="$PWD"
 
 
-#get fdroid prebuilt apps
+#get fdroid prebuilt apps (check signature like in https://f-droid.org/docs/Verifying_Downloaded_APK/)
 gpg --keyserver keys.openpgp.org --recv-key 37D2C98789D8311948394E3E41E7044E1DBA2E89
 vendor/replicant/get-prebuilts
 
