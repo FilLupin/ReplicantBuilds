@@ -24,8 +24,7 @@ softwareheritageget(){
 	if [ ! -d "${TMP}/softwareheritage" ]; then
 		mkdir -p "${TMP}/softwareheritage"
 	fi
-p
-	if ! [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
+	if [ ! -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
 		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${1}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
 		if [ "$?" != 0 ]; then
 			if [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
