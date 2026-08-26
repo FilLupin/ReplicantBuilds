@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# temporary directory where will be downloaded git repo
+TMP="/tmp" 
+
 usage(){
 echo "======USAGE====="
 echo
@@ -18,43 +21,43 @@ softwareheritageget(){
 		return 1
 	fi
 
-	if [ ! -d "/tmp/softwareheritage" ]; then
-		mkdir -p "/tmp/softwareheritage"
+	if [ ! -d "${TMP}/softwareheritage" ]; then
+		mkdir -p "${TMP}/softwareheritage"
 	fi
-
-	if ! [ -f "/tmp/softwareheritage/repositoryID.txt" ]; then
-		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${1}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > /tmp/softwareheritage/repositoryID.txt
+p
+	if ! [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
+		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${1}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
 		if [ "$?" != 0 ]; then
-			if [ -f "/tmp/softwareheritage/repositoryID.txt" ]; then
-				rm -f "/tmp/softwareheritage/repositoryID.txt"
+			if [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
+				rm -f "${TMP}/softwareheritage/repositoryID.txt"
 			fi
 			return 1
 		fi
 	fi
 
-	if [ ! -f "/tmp/softwareheritage/jsonresponse.txt" ]; then
-		curl -XPOST "https://archive.softwareheritage.org/api/1/vault/git-bare/$(cat "/tmp/softwareheritage/repositoryID.txt")/" > /tmp/softwareheritage/jsonresponse.txt
+	if [ ! -f "${TMP}/softwareheritage/jsonresponse.txt" ]; then
+		curl -XPOST "https://archive.softwareheritage.org/api/1/vault/git-bare/$(cat "${TMP}/softwareheritage/repositoryID.txt")/" > ${TMP}/softwareheritage/jsonresponse.txt
 		if [ "$?" != 0 ]; then
-			if [ -f "/tmp/softwareheritage/jsonresponse.txt" ]; then
-				rm -f "/tmp/softwareheritage/jsonresponse.txt"
+			if [ -f "${TMP}/softwareheritage/jsonresponse.txt" ]; then
+				rm -f "${TMP}/softwareheritage/jsonresponse.txt"
 			fi
 			return 1
 		fi
 	fi
 
 	if [ ! -f "${2}" ]; then
-		curl -L -o "${2}" "$(printf "%s" "$(cat /tmp/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
+		curl -L -o "${2}" "$(printf "%s" "$(cat ${TMP}/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
 		if [ "$?" != 0 ]; then
 			if [ -f "${2}" ]; then
 				rm -f "${2}"
 			fi
 			return 1
 		else
-			rm -rf "/tmp/softwareheritage"
+			rm -rf "${TMP}/softwareheritage"
 			return 0
 		fi
 	else
-		rm -rf "/tmp/softwareheritage"
+		rm -rf "${TMP}/softwareheritage"
 		return 0
 	fi
 }
@@ -205,10 +208,10 @@ processxml(){
 					fi
 
 					if [ "$1" = "sync" ]; then
-						mkdir "/tmp/replicant_clone"
+						mkdir "${TMP}/replicant_clone"
 						mkdir -p "${mirrordirectory}/${clonedir}"
 						#echo "cd "${mirrordirectory}/${clonedir}""
-						cd "/tmp/replicant_clone"
+						cd "${TMP}/replicant_clone"
 						if [ ! -f "$(basename "${projectname}").tar.gz" ]; then
 							retries=0
 							while true; do
@@ -403,20 +406,20 @@ processxml(){
 					elif [ "$1" = "processsources" ]; then
 						mkdir -p "${outputdirectory}/$(dirname "${projectpath}")"
 						if [ -d "${outputdirectory}/$(dirname "${projectpath}")" ]; then
-							mkdir -p /tmp/replicant_project_extract
-							if [ ! -d "/tmp/replicant_project_extract" ]; then
-								echo "Could not create /tmp/replicant_project_extract dir , exiting."
+							mkdir -p ${TMP}/replicant_project_extract
+							if [ ! -d "${TMP}/replicant_project_extract" ]; then
+								echo "Could not create ${TMP}/replicant_project_extract dir , exiting."
 								exit 1
 							fi
 	
 							if [ -f "${mirrordirectory}/${clonedir}/$(basename "$projectname").tar.gz" ]; then
-								cd "/tmp/replicant_project_extract"
+								cd "${TMP}/replicant_project_extract"
 								tar -xf "${mirrordirectory}/${clonedir}/$(basename "$projectname").tar.gz"
-								echo "cloning "$(find /tmp/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" to "${outputdirectory}/${projectpath}""
+								echo "cloning "$(find ${TMP}/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" to "${outputdirectory}/${projectpath}""
 								if [ "$projectclonedepth" = "" ]; then
-									git clone "$(find /tmp/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" "${outputdirectory}/${projectpath}" 2>/dev/null 1>/dev/null
+									git clone "$(find ${TMP}/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" "${outputdirectory}/${projectpath}"
 								else
-									git clone --depth ${projectclonedepth} "$(find /tmp/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" "${outputdirectory}/${projectpath}" 2>/dev/null 1>/dev/null
+									git clone --depth ${projectclonedepth} "$(find ${TMP}/replicant_project_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)" "${outputdirectory}/${projectpath}"
 								fi
 								if [ "$?" != 0 ]; then
 									echo "Move operation failed, exiting"
@@ -425,7 +428,7 @@ processxml(){
 									fi
 									exit 1
 								fi
-								rm -rf /tmp/replicant_project_extract
+								rm -rf ${TMP}/replicant_project_extract
 	
 								cd "${outputdirectory}/${projectpath}"
 								echo "checking out tag ${clonetag}"
