@@ -3,6 +3,10 @@
 # temporary directory where will be downloaded git repo
 TMP="/tmp" 
 
+# print on stdout the usage of the script
+# parameters: -
+# return: -
+# output: print usage on stdout
 usage(){
 echo "======USAGE====="
 echo
@@ -16,8 +20,19 @@ echo "to use a reconstructed mirror to generate sources ready for building"
 echo
 }
 
+
+# get SoftwareHeritage repo content from CLONEURL in TARGZ file.
+# parameters:
+#     CLONEURL  original repository URL
+#     TARGZ     tar.gz file to download from SoftwareHeritage
+# return: 
+#     0 if success
+#     1 else (could be more distinctive since return code is not currentl used) TODO
+# output: -
 softwareheritageget(){
-	if [ ! -d "$(dirname "$2")" ]; then
+        CLONEURL=${1}
+        TARGZ=${2}
+	if [ ! -d "$(dirname "${TARGZ}")" ]; then
 		return 1
 	fi
 
@@ -25,7 +40,7 @@ softwareheritageget(){
 		mkdir -p "${TMP}/softwareheritage"
 	fi
 	if [ ! -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
-		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${1}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
+		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${CLONEURL}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
 		if [ "$?" != 0 ]; then
 			if [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
 				rm -f "${TMP}/softwareheritage/repositoryID.txt"
@@ -44,11 +59,11 @@ softwareheritageget(){
 		fi
 	fi
 
-	if [ ! -f "${2}" ]; then
-		curl -L -o "${2}" "$(printf "%s" "$(cat ${TMP}/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
+	if [ ! -f "${TARGZ}" ]; then
+		curl -L -o "${TARGZ}" "$(printf "%s" "$(cat ${TMP}/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
 		if [ "$?" != 0 ]; then
-			if [ -f "${2}" ]; then
-				rm -f "${2}"
+			if [ -f "${TARGZ}" ]; then
+				rm -f "${TARGZ}"
 			fi
 			return 1
 		else
@@ -61,10 +76,19 @@ softwareheritageget(){
 	fi
 }
 
+
+# TODO
+# parameters:
+#    ORIGINS:      TODO
+#    PROJECTNAME:  TODO
+# return: -
+# output: -
 deleteline(){
-pos="$(expr $(grep -n "^${2}\s.*" "${1}" | cut -d : -f 1))"
-head -n $(expr ${pos} - 1) "${1}"
-tail -n $(expr $(cat "${1}" | wc -l) - ${pos}) "${1}"
+        ORIGINS=${1}
+        PROJECTNAME=${2}
+        pos="$(expr $(grep -n "^${PROJECTNAME}\s.*" "${ORIGINS}" | cut -d : -f 1))"
+        head -n $(expr ${pos} - 1) "${ORIGINS}"
+        tail -n $(expr $(cat "${ORIGINS}" | wc -l) - ${pos}) "${ORIGINS}"
 }
 
 
@@ -73,7 +97,7 @@ if [ ! -f "$2" ]; then
 	exit 1
 fi
 
-if [ ! -d "$3" ]; then
+if [ ! -d "${MIRRORDIRECTORY}" ]; then
 	usage
 	exit 1
 fi
@@ -107,8 +131,29 @@ projectpath=""
 projectremote=""
 projectgroups=""
 
+
+# processes manifest XML of a project list/get every git subprojet
+#
+# parameters:
+#    OPTION:          
+#    MANIFEST:        
+#    MIRRORDIRECTORY: 
+#    REALDIRMANIFEST: 
+# return: - TODO return error codes depending on the case
+# output: read a manifest XML file and:
+#     1. recursiverly processes repositories included
+#     2. concatenates
+#         a. remotes name, fetch & revision included
+#         b. default revision & remote
+#         c. project name, path, remote, groups & clone-depth
+#         d. for each project remote:
+#             * TODO: To be continued
 processxml(){
-	for line in $(cat "$2"); do
+        OPTION=${1}
+        MANIFEST=${2}
+        MIRRORDIRECTORY=${3}
+        REALDIRMANIFEST=${4}
+	for line in $(cat "${MANIFEST}"); do
 		#echo "$line<<<<"
 
 		if [ "$(echo "$line" | grep "^manifest>.*")" != "" ]; then
@@ -122,7 +167,7 @@ processxml(){
 					toinclude="$(printf "%s" "${toinclude}" | cut -d '"' -f 2)"
 				fi
 				if [ "$toinclude" != "" ]; then
-					processxml "$1" "$4/${toinclude}" "$3" "$4"
+					processxml "${OPTION}" "${REALDIRMANIFEST}/${toinclude}" "${MIRRORDIRECTORY}" "${REALDIRMANIFEST}"
 				fi
 			elif [ "$(echo "$line" | grep "^remote .*")" != "" ]; then
 				onremote=1
@@ -206,7 +251,7 @@ processxml(){
 						clonetag="${defaultrevision}"
 					fi
 
-					if [ "$1" = "sync" ]; then
+					if [ "${OPTION}" = "sync" ]; then
 						mkdir "${TMP}/replicant_clone"
 						mkdir -p "${mirrordirectory}/${clonedir}"
 						#echo "cd "${mirrordirectory}/${clonedir}""
@@ -345,7 +390,7 @@ processxml(){
 					#echo "git clone ${cloneurl} ${clonetag}"
 	
 	
-					elif [ "$1" = "reconstructmirror" ]; then
+					elif [ "${OPTION}" = "reconstructmirror" ]; then
 							mkdir -p "${mirrordirectory}/${clonedir}"
 						cd "${mirrordirectory}/${clonedir}"
 						if [ ! -f "$(basename "${projectname}").tar.gz" ]; then
@@ -402,7 +447,7 @@ processxml(){
 						fi
 	
 					#echo "git clone ${cloneurl} ${clonetag}"
-					elif [ "$1" = "processsources" ]; then
+					elif [ "${OPTION}" = "processsources" ]; then
 						mkdir -p "${outputdirectory}/$(dirname "${projectpath}")"
 						if [ -d "${outputdirectory}/$(dirname "${projectpath}")" ]; then
 							mkdir -p ${TMP}/replicant_project_extract
@@ -444,7 +489,7 @@ processxml(){
 	
 				#echo "${projectgroups}"
 				#echo "${projectname} ${projectpath} ${projectremote} ${projectgroups}"
-				elif [ "$(echo "$line" | grep "^copyfile .*")" != "" ] && [ "$1" = "processsources" ]; then
+				elif [ "$(echo "$line" | grep "^copyfile .*")" != "" ] && [ "${OPTION}" = "processsources" ]; then
 	
 				#echo "$line"
 				copyfilesrc="$(echo $line | grep -o 'src=".*"')"
