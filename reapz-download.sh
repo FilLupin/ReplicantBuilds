@@ -3,6 +3,10 @@
 # temporary directory where will be downloaded git repo
 TMP="/tmp" 
 
+# print on stdout the usage of the script
+# parameters: -
+# return: -
+# output: print usage on stdout
 usage(){
 echo "======USAGE====="
 echo
@@ -16,6 +20,14 @@ echo "to use a reconstructed mirror to generate sources ready for building"
 echo
 }
 
+# get SoftwareHeritage repo content
+# parameters:
+#     CLONEURL  original repository URL to clone
+#     TARGZ     tar.gz file name into which downloading repository archive 
+# return: 
+#     0 if success
+#     1 else (could be more distinctive since return code is not currentl used) TODO
+# output: -
 softwareheritageget(){
 	if [ ! -d "$(dirname "$2")" ]; then
 		return 1
@@ -61,6 +73,12 @@ softwareheritageget(){
 	fi
 }
 
+# TODO
+# parameters:
+#    ORIGINS:      TODO
+#    PROJECTNAME:  TODO
+# return: -
+# output: -
 deleteline(){
 pos="$(expr $(grep -n "^${2}\s.*" "${1}" | cut -d : -f 1))"
 head -n $(expr ${pos} - 1) "${1}"
@@ -107,6 +125,22 @@ projectpath=""
 projectremote=""
 projectgroups=""
 
+# processes manifest XML of a project list/get every git subprojet
+#
+# parameters:
+#    OPTION:          
+#    MANIFEST:        
+#    MIRRORDIRECTORY: 
+#    REALDIRMANIFEST: 
+# return: - TODO return error codes depending on the case
+# output: read a manifest XML file and:
+#     1. recursiverly processes repositories included
+#     2. concatenates
+#         a. remotes name, fetch & revision included
+#         b. default revision & remote
+#         c. project name, path, remote, groups & clone-depth
+#         d. for each project remote:
+#             * TODO: to be continued
 processxml(){
 	for line in $(cat "$2"); do
 		#echo "$line<<<<"
