@@ -17,8 +17,8 @@ echo
 }
 
 softwareheritageget(){
-    CLONEURL=${1}
-    TARGZ=${2}
+    CLONEURL="${1}"
+    TARGZ="${2}"
 	if [ ! -d "$(dirname "${TARGZ}")" ]; then
 		return 1
 	fi
@@ -64,8 +64,8 @@ softwareheritageget(){
 }
 
 deleteline(){
-	ORIGINS=${1}
-	PROJECTNAME=${2}
+	ORIGINS="${1}"
+	PROJECTNAME="${2}"
 	pos="$(expr $(grep -n "^${PROJECTNAME}\s.*" "${ORIGINS}" | cut -d : -f 1))"
 	head -n $(expr ${pos} - 1) "${ORIGINS}"
 	tail -n $(expr $(cat "${ORIGINS}" | wc -l) - ${pos}) "${ORIGINS}"
@@ -112,10 +112,10 @@ projectremote=""
 projectgroups=""
 
 processxml(){
-	OPTION=${1}
-	MANIFEST=${2}
-	MIRRORDIRECTORY=${3}
-	REALDIRMANIFEST=${4}
+	OPTION="${1}"
+	MANIFEST="${2}"
+	MIRRORDIRECTORY="${3}"
+	REALDIRMANIFEST="${4}"
 
 	for line in $(cat "${MANIFEST}"); do
 		#echo "$line<<<<"
