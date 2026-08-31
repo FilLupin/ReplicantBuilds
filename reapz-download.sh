@@ -17,7 +17,9 @@ echo
 }
 
 softwareheritageget(){
-	if [ ! -d "$(dirname "$2")" ]; then
+    CLONEURL=${1}
+    TARGZ=${2}
+	if [ ! -d "$(dirname "${TARGZ}")" ]; then
 		return 1
 	fi
 
@@ -25,7 +27,7 @@ softwareheritageget(){
 		mkdir -p "${TMP}/softwareheritage"
 	fi
 	if [ ! -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
-		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${1}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
+		curl "https://archive.softwareheritage.org/browse/origin/directory/?origin_url=${CLONEURL}&visit_type=git" | grep -o 'visit=.*;' | cut -d = -f 2-3 | cut -d ';' -f 1 > ${TMP}/softwareheritage/repositoryID.txt
 		if [ "$?" != 0 ]; then
 			if [ -f "${TMP}/softwareheritage/repositoryID.txt" ]; then
 				rm -f "${TMP}/softwareheritage/repositoryID.txt"
@@ -44,11 +46,11 @@ softwareheritageget(){
 		fi
 	fi
 
-	if [ ! -f "${2}" ]; then
-		curl -L -o "${2}" "$(printf "%s" "$(cat ${TMP}/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
+	if [ ! -f "${TARGZ}" ]; then
+		curl -L -o "${TARGZ}" "$(printf "%s" "$(cat ${TMP}/softwareheritage/jsonresponse.txt)" | grep -o '"fetch_url":".*"' | cut -d '"' -f 4)"
 		if [ "$?" != 0 ]; then
-			if [ -f "${2}" ]; then
-				rm -f "${2}"
+			if [ -f "${TARGZ}" ]; then
+				rm -f "${TARGZ}"
 			fi
 			return 1
 		else
