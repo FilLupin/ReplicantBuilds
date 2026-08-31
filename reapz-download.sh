@@ -64,9 +64,11 @@ softwareheritageget(){
 }
 
 deleteline(){
-pos="$(expr $(grep -n "^${2}\s.*" "${1}" | cut -d : -f 1))"
-head -n $(expr ${pos} - 1) "${1}"
-tail -n $(expr $(cat "${1}" | wc -l) - ${pos}) "${1}"
+	ORIGINS=${1}
+	PROJECTNAME=${2}
+	pos="$(expr $(grep -n "^${PROJECTNAME}\s.*" "${ORIGINS}" | cut -d : -f 1))"
+	head -n $(expr ${pos} - 1) "${ORIGINS}"
+	tail -n $(expr $(cat "${ORIGINS}" | wc -l) - ${pos}) "${ORIGINS}"
 }
 
 
