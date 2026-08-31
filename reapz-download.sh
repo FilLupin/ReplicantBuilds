@@ -112,7 +112,12 @@ projectremote=""
 projectgroups=""
 
 processxml(){
-	for line in $(cat "$2"); do
+	OPTION=${1}
+	MANIFEST=${2}
+	MIRRORDIRECTORY=${3}
+	REALDIRMANIFEST=${4}
+
+	for line in $(cat "${MANIFEST}"); do
 		#echo "$line<<<<"
 
 		if [ "$(echo "$line" | grep "^manifest>.*")" != "" ]; then
@@ -126,7 +131,7 @@ processxml(){
 					toinclude="$(printf "%s" "${toinclude}" | cut -d '"' -f 2)"
 				fi
 				if [ "$toinclude" != "" ]; then
-					processxml "$1" "$4/${toinclude}" "$3" "$4"
+					processxml "${OPTION}" "${REALDIRMANIFEST}/${toinclude}" "${MIRRORDIRECTORY}" "${REALDIRMANIFEST}"
 				fi
 			elif [ "$(echo "$line" | grep "^remote .*")" != "" ]; then
 				onremote=1
@@ -210,7 +215,7 @@ processxml(){
 						clonetag="${defaultrevision}"
 					fi
 
-					if [ "$1" = "sync" ]; then
+					if [ "${OPTION}" = "sync" ]; then
 						mkdir "${TMP}/replicant_clone"
 						mkdir -p "${mirrordirectory}/${clonedir}"
 						#echo "cd "${mirrordirectory}/${clonedir}""
@@ -349,7 +354,7 @@ processxml(){
 					#echo "git clone ${cloneurl} ${clonetag}"
 	
 	
-					elif [ "$1" = "reconstructmirror" ]; then
+					elif [ "${OPTION}" = "reconstructmirror" ]; then
 							mkdir -p "${mirrordirectory}/${clonedir}"
 						cd "${mirrordirectory}/${clonedir}"
 						if [ ! -f "$(basename "${projectname}").tar.gz" ]; then
@@ -406,7 +411,7 @@ processxml(){
 						fi
 	
 					#echo "git clone ${cloneurl} ${clonetag}"
-					elif [ "$1" = "processsources" ]; then
+					elif [ "${OPTION}" = "processsources" ]; then
 						mkdir -p "${outputdirectory}/$(dirname "${projectpath}")"
 						if [ -d "${outputdirectory}/$(dirname "${projectpath}")" ]; then
 							mkdir -p ${TMP}/replicant_project_extract
@@ -448,7 +453,7 @@ processxml(){
 	
 				#echo "${projectgroups}"
 				#echo "${projectname} ${projectpath} ${projectremote} ${projectgroups}"
-				elif [ "$(echo "$line" | grep "^copyfile .*")" != "" ] && [ "$1" = "processsources" ]; then
+				elif [ "$(echo "$line" | grep "^copyfile .*")" != "" ] && [ "${OPTION}" = "processsources" ]; then
 	
 				#echo "$line"
 				copyfilesrc="$(echo $line | grep -o 'src=".*"')"
