@@ -4,16 +4,16 @@
 TMP="/tmp" 
 
 usage(){
-echo "======USAGE====="
-echo
-echo "$ ./reapz-download.sh "reconstructmirror" <manifest.xml> <mirrordirectory>"
-echo "to reconstruct a mirror of the archives contained in manifest.xml"
-echo
-echo "OR"
-echo
-echo "$ ./reapz-download.sh "processsources" <manifest.xml> <mirrordirectory> <outputdirectory>"
-echo "to use a reconstructed mirror to generate sources ready for building"
-echo
+	echo "======USAGE====="
+	echo
+	echo "$ ./reapz-download.sh "reconstructmirror" <manifest.xml> <mirrordirectory>"
+	echo "to reconstruct a mirror of the archives contained in manifest.xml"
+	echo
+	echo "OR"
+	echo
+	echo "$ ./reapz-download.sh "processsources" <manifest.xml> <mirrordirectory> <outputdirectory>"
+	echo "to use a reconstructed mirror to generate sources ready for building"
+	echo
 }
 
 softwareheritageget(){
