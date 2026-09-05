@@ -26,7 +26,7 @@ echo
 #     TARGZ     tar.gz file name into which downloading repository archive 
 # return: 
 #     0 if success
-#     1 else (could be more distinctive since return code is not currentl used) TODO
+#     1 else (could be more distinctive since return code is not currently used) TODO
 # output: -
 softwareheritageget(){
 	if [ ! -d "$(dirname "$2")" ]; then
@@ -128,10 +128,10 @@ projectgroups=""
 # processes manifest XML of a project list/get every git subprojet
 #
 # parameters:
-#    OPTION:          
-#    MANIFEST:        
-#    MIRRORDIRECTORY: 
-#    REALDIRMANIFEST: 
+#    OPTION:          sync to TODO, reconstructmirror to create a mirror of all repositories as tar.gz files, processsources to checkout repo on the declared revision branch & copy declared file
+#    MANIFEST:        path to the manifest XML file which includes the repositories to use
+#    MIRRORDIRECTORY: directory where the repo will be downloaded/found
+#    REALDIRMANIFEST: TODO
 # return: - TODO return error codes depending on the case
 # output: read a manifest XML file and:
 #     1. recursiverly processes repositories included
