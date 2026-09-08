@@ -2,7 +2,7 @@
 
 # temporary directory where will be downloaded git repo
 TMP="/tmp" 
-# NUMBER OF RETRIES BEFORE GIVING UP
+# number of retries to clone git repo & download softwareheritage archive before giving up
 MAXRETRIES=10
 
 usage(){
